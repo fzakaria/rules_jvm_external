@@ -16,16 +16,21 @@ def _pom_file_impl(ctx):
         additional_deps = determine_additional_dependencies(artifact_jars, ctx.attr.additional_dependencies)
 
         all_maven_deps = info.maven_deps.to_list()
+
         export_maven_deps = info.maven_export_deps.to_list()
 
         for dep in additional_deps:
             for coords in dep[MavenInfo].as_maven_dep.to_list():
                 all_maven_deps.append(coords)
 
-        expanded_maven_deps = [
-            ctx.expand_make_variables("additional_deps", coords, ctx.var)
-            for coords in all_maven_deps
-        ]
+        # FIXME: I am not sure why some of the MavenInfo in all_infos have a None coordinates
+        expanded_maven_deps = []
+        for maven_info in info.all_infos.to_list():
+            if maven_info.coordinates != None:
+                expanded_maven_deps.append(
+                    ctx.expand_make_variables("additional_deps", maven_info.coordinates, ctx.var)
+                )
+
         expanded_export_deps = [
             ctx.expand_make_variables("maven_export_deps", coords, ctx.var)
             for coords in export_maven_deps

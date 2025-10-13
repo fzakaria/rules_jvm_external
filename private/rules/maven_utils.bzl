@@ -144,7 +144,7 @@ def generate_pom(
         if unpacked.packaging == "pom" and is_bom:
             new_scope = "import"
 
-        deps.append(format_dep(unpacked, scope = new_scope, indent = indent, exclusions = exclusions.get(dep, {}), include_version = include_version))
+        deps.append(format_dep(unpacked, scope = new_scope, indent = indent, exclusions = ["*:*"], include_version = include_version))
 
     substitutions.update({"{dependencies}": "\n".join(deps)})
 
